@@ -4,9 +4,10 @@
   "description": "A basic browser with proxy functionality",
   "main": "index.html",
   "scripts": {
-     "start": "node index.html",
-     "dev": "npm run start"
+    "start": "node index.html --port 3000",
+    "dev": "npm run start"
   },
   "author": "Your Name",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }
