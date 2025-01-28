@@ -69,12 +69,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // --- Node.js Server Code ---
 if (typeof module !== 'undefined' && module.exports) { // Checks if running in Node.js
-  const http = require('http');
-  const https = require('https');
+    const http = require('http');
+    const https = require('https');
     const url = require('url');
 
-    const hostname = '127.0.0.1';
-    const port = 3000;
+
+    // Get port from command line args
+    const args = process.argv.slice(2);
+    let port = 3000;
+    args.forEach((arg, index) => {
+        if (arg === '--port') {
+            const parsedPort = parseInt(args[index + 1], 10);
+            if (!isNaN(parsedPort)) {
+                port = parsedPort;
+            }
+        }
+    });
+   const hostname = '127.0.0.1';
+
 
   const server = http.createServer((req, res) => {
         const parsedUrl = url.parse(req.url, true);
