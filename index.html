@@ -1,20 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Proxy Search</title>
-    <link rel="stylesheet" href="style.css">
+    <title>My Simple Browser</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .toolbar {
+            padding: 10px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        iframe {
+            flex-grow: 1;
+            border: none;
+            height: calc(100% - 50px);
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>My Proxy Search</h1>
-        <input type="text" id="search-input" placeholder="Enter URL">
-        <button onclick="loadWebsite()">Go</button>
-        <div class="iframe-container">
-            <iframe id="website-frame" src="" frameborder="0"></iframe>
-        </div>
+    <div class="toolbar">
+        <button id="backButton">Back</button>
+        <button id="forwardButton">Forward</button>
+        <button id="refreshButton">Refresh</button>
+        <input type="text" id="urlInput" placeholder="Enter URL">
+        <button id="goButton">Go</button>
     </div>
-    <script src="script.js"></script>
+    <iframe id="contentFrame" src="" sandbox></iframe>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlInput = document.getElementById('urlInput');
+            const goButton = document.getElementById('goButton');
+            const contentFrame = document.getElementById('contentFrame');
+            const backButton = document.getElementById('backButton');
+            const forwardButton = document.getElementById('forwardButton');
+            const refreshButton = document.getElementById('refreshButton');
+            let history = [];
+            let historyIndex = -1;
+
+            function loadURL(url) {
+              if (url && url.trim() !== "") {
+                  historyIndex++;
+                  history.splice(historyIndex, history.length - historyIndex, url); // Clears future history
+
+                  fetch(`/proxy?url=${encodeURIComponent(url)}`) // Requesting URL through proxy
+                      .then(response => response.text())
+                      .then(html => {
+                          contentFrame.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+
+                      })
+                      .catch(error => {
+                          console.error('Error fetching page:', error);
+                          contentFrame.src = 'data:text/html;charset=utf-8,' + encodeURIComponent('<h1>Error loading page</h1><p>' + error + '</p>');
+                      });
+
+
+                // Update URL bar to show newly loaded url
+                urlInput.value = url;
+                 // Enable or disable navigation buttons based on history
+                backButton.disabled = historyIndex <= 0;
+                forwardButton.disabled = historyIndex >= history.length - 1;
+
+              }
+            }
+
+
+            function navigateHistory(offset) {
+                if(history[historyIndex + offset]){
+                    historyIndex += offset;
+                    loadURL(history[historyIndex]);
+                }
+                backButton.disabled = historyIndex <= 0;
+                forwardButton.disabled = historyIndex >= history.length - 1;
+            }
+
+
+            goButton.addEventListener('click', function () {
+                const url = urlInput.value;
+                loadURL(url);
+            });
+
+            urlInput.addEventListener('keydown', function(event){
+              if(event.key === 'Enter'){
+                const url = urlInput.value;
+                loadURL(url);
+              }
+            })
+
+            backButton.addEventListener('click', () => {
+              navigateHistory(-1);
+            });
+
+            forwardButton.addEventListener('click', () => {
+              navigateHistory(1)
+            });
+
+            refreshButton.addEventListener('click', () => {
+                loadURL(history[historyIndex]);
+            });
+
+        });
+    </script>
 </body>
 </html>
