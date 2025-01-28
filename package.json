@@ -1,0 +1,12 @@
+{
+  "name": "my-proxy-search",
+  "version": "1.0.0",
+  "description": "Simple Proxy Search",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -c-1 ./"
+  },
+  "dependencies": {
+      "http-server": "^14.1.1"
+  }
+}
