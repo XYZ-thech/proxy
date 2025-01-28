@@ -1,12 +1,12 @@
 {
-  "name": "my-proxy-search",
+  "name": "simple-browser-proxy",
   "version": "1.0.0",
-  "description": "Simple Proxy Search",
+  "description": "A basic browser with proxy functionality",
   "main": "index.html",
   "scripts": {
-    "start": "http-server -c-1 ./"
+     "start": "node index.html",
+     "dev": "npm run start"
   },
-  "dependencies": {
-      "http-server": "^14.1.1"
-  }
+  "author": "Your Name",
+  "license": "ISC"
 }
